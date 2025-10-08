@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PredictionMart — Market for Future Events</title>
+  <meta name="description" content="PredictionMart — Trade on outcomes. Share price = market probability. Launched from Dubai/Singapore, serving Asia with focus on India."/>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --muted:#94a3b8;
+      --accent:#6ee7b7;
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background: linear-gradient(180deg,#071020 0%, #071827 100%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.5;
+      padding:32px;
+    }
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+    }
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:28px;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),#60a5fa);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:700;color:#042028;
+      box-shadow:0 6px 20px rgba(6,11,19,0.6);
+    }
+    h1{margin:0;font-size:20px}
+    p.lead{color:var(--muted);margin:6px 0 0;font-size:13px}
+    .card{
+      background:linear-gradient(180deg,var(--card), #071827 140%);
+      border-radius:14px;
+      padding:20px;
+      box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:20px;
+      margin-top:18px;
+    }
+    @media (max-width:980px){
+      .grid{grid-template-columns:1fr; padding-bottom:48px}
+    }
+
+    /* left column content */
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .mission{
+      font-size:18px;margin:0 0 6px;
+      color:#e9fbf1;
+    }
+    .pill{display:inline-block;background:var(--glass);padding:6px 10px;border-radius:999px;color:var(--muted);font-size:13px}
+    .persona{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      margin-bottom:12px;
+    }
+    .persona .avatar{
+      width:46px;height:46px;border-radius:8px;background:var(--glass-2);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--muted)
+    }
+    .persona .meta{flex:1}
+    .small{font-size:13px;color:var(--muted)}
+    .ops-list{display:grid;gap:10px;margin-top:8px}
+    .ops-item{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .examples{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .example{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.016), transparent);border:1px solid rgba(255,255,255,0.02)}
+    .muted-block{color:var(--muted);font-size:13px}
+
+    /* right column */
+    .right-column{display:flex;flex-direction:column;gap:16px}
+    .widget{
+      padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.02)
+    }
+    .widget h3{margin:0 0 8px}
+    .control-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .btn{
+      border:0;padding:8px 12px;border-radius:8px;background:linear-gradient(90deg,#34d399,#60a5fa);color:#042028;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(6,11,19,0.6)
+    }
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    canvas{width:100%!important;height:220px!important}
+
+    footer{margin-top:26px;color:var(--muted);font-size:13px;text-align:center}
+    a.cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,#60a5fa,#6ee7b7);color:#042028;text-decoration:none;font-weight:600}
+
+    .youtube-wrap iframe{width:100%;height:220px;border-radius:10px;border:0}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">PM</div>
+        <div>
+          <h1>PredictionMart</h1>
+          <p class="lead">Trade on outcomes — share price = collective probability. Built for Asia (Dubai / Singapore launch).</p>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="pill">Regulated launch: Dubai / Singapore</div>
+        <div style="margin-top:8px" class="small">Focus: India & pan-Asia markets</div>
+      </div>
+    </header>
+
+    <main class="grid">
+      <!-- left column -->
+      <section>
+        <div class="card">
+          <div class="section-title">
+            <div style="flex:1">
+              <div class="mission">Our mission</div>
+              <p style="margin:6px 0 0">PredictionMart brings transparent, market-driven probability pricing to newsworthy events — helping traders, analysts and institutions convert foresight into measurable value.</p>
+            </div>
+          </div>
+
+          <hr style="border:none;height:1px;margin:14px 0;background:rgba(255,255,255,0.02)"/>
+
+          <h3 style="margin-top:0">Who we build for</h3>
+          <div class="persona">
+            <div class="avatar">PR</div>
+            <div class="meta">
+              <div style="font-weight:600">Proto-Researcher (Retail analyst)</div>
+              <div class="small">Wants quick probability signals on geopolitical and tech outcomes; uses markets to inform position sizing.</div>
+            </div>
+          </div>
+
+          <div class="persona">
+            <div class="avatar">PM</div>
+            <div class="meta">
+              <div style="font-weight:600">Product / Strategy Lead (mid-cap)</div>
+              <div class="small">Looks for crowd-sourced risk estimates to guide launches and macro hedging decisions.</div>
+            </div>
+          </div>
+
+          <div class="persona">
+            <div class="avatar">IN</div>
+            <div class="meta">
+              <div style="font-weight:600">Institutional Investor (hedge fund)</div>
+              <div class="small">Uses short-term markets for event-driven trading and to calibrate model priors.</div>
+            </div>
+          </div>
+
+          <hr style="border:none;height:1px;margin:14px 0;background:rgba(255,255,255,0.02)"/>
+
+          <h3 style="margin-top:0">Quick primer — what is a prediction market?</h3>
+          <p class="muted-block">
+            A prediction market is a marketplace where participants buy and sell shares tied to the outcome of a specific, verifiable event.
+            Each share’s **price** can be read as the market’s probability that the event happens. For example, a share priced at <strong>$0.42</strong> implies a 42% market probability.
+          </p>
+
+          <div style="margin-top:10px">
+            <strong>How price ↔ probability works</strong>
+            <div class="small" style="margin-top:6px">
+              • Price is expressed between $0.00 and $1.00 per share. $1.00 pays out $1 if the event occurs, $0 otherwise.<br>
+              • Price ≈ probability. Example: $0.75 → market expects ~75% chance. Prices move as traders buy/sell based on new information.
+            </div>
+          </div>
+
+          <hr style="border:none;height:1px;margin:14px 0;background:rgba(255,255,255,0.02)"/>
+
+          <h3 style="margin-top:0">Operational flow — how to participate</h3>
+          <div class="ops-list">
+            <div class="ops-item"><strong>1. Sign up</strong> — Create an account and complete KYC where required (we launch under Dubai / Singapore regs).</div>
+            <div class="ops-item"><strong>2. Deposit funds</strong> — Add fiat or supported stablecoins. Balances appear in your wallet on the platform.</div>
+            <div class="ops-item"><strong>3. Browse markets</strong> — Each market lists an event, resolution criteria, and current price.</div>
+            <div class="ops-item"><strong>4. Buy / Sell shares</strong> — Market or limit orders. Buying pushes price up, selling pushes it down.</div>
+            <div class="ops-item"><strong>5. Resolution</strong> — When the event resolves (using public, verifiable sources), winning shares payout $1 per share; losing shares are worth $0.</div>
+          </div>
+
+          <hr style="border:none;height:1px;margin:14px 0;background:rgba(255,255,255,0.02)"/>
+
+          <h3 style="margin-top:0">Example transactions (walkthroughs)</h3>
+          <div class="examples">
+            <div class="example">
+              <strong>Example 1 — Simple directional bet</strong>
+              <div class="small" style="margin-top:6px">
+                Market: "Will Company X release product Y by June 30, 2026?"<br>
+                Current price: $0.30 (30% chance). You buy 100 shares at $0.30 → cost $30. If the product launches you receive 100 × $1 = $100; profit = $70 (minus fees). If not, you lose $30.
+              </div>
+            </div>
+
+            <div class="example">
+              <strong>Example 2 — Trading price changes</strong>
+              <div class="small" style="margin-top:6px">
+                You buy 200 shares at $0.45 costing $90. Later, new data moves market to $0.60. You sell 200 shares at $0.60 → receive $120, net profit $30. You realized a trade P&L without waiting for resolution.
+              </div>
+            </div>
+
+            <div class="example">
+              <strong>Example 3 — Scalping/hedge</strong>
+              <div class="small" style="margin-top:6px">
+                You think the market is overvalued at $0.80. You short (sell) 50 shares. If the price drops to $0.50 you buy to close, pocketing the difference. Institutions also use markets to hedge event risk for exposure management.
+              </div>
+            </div>
+          </div>
+
+          <hr style="border:none;height:1px;margin:14px 0;background:rgba(255,255,255,0.02)"/>
+
+          <h3 style="margin-top:0">Safety, compliance & resolution</h3>
+          <p class="muted-block">
+            PredictionMart will launch under a regulated entity in Dubai or Singapore and adhere to local financial and AML/KYC rules. Market resolution rules are published per market and use public, verifiable sources (news wires, regulatory filings, registry records).
+          </p>
+
+          <a class="cta" href="#" onclick="alert('This is a demo page — integrate with your auth system for live signups.')">Request early access</a>
+        </div>
+      </section>
+
+      <!-- right column -->
+      <aside class="right-column">
+        <!-- Market Simulator widget (custom) -->
+        <div class="card widget" id="market-sim">
+          <h3>Market Simulator — live example</h3>
+          <p class="small">A simulated single market. Click <strong>Add datapoint</strong> to append a random new price (0.00–1.00). Price maps to probability.</p>
+          <canvas id="marketChart"></canvas>
+          <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+            <button class="btn" id="addPointBtn">Add datapoint</button>
+            <button class="btn ghost" id="resetBtn">Reset</button>
+            <div style="margin-left:auto" class="small muted-block">Last price: <span id="lastPrice">—</span></div>
+          </div>
+          <div class="note">Tip: this demonstrates how new trades/news can move market probability in real time.</div>
+        </div>
+
+        <!-- Prebuilt widget: YouTube -->
+        <div class="card widget">
+          <h3>Explainers & resources</h3>
+          <p class="small">Quick video explainer about prediction markets.</p>
+          <div class="youtube-wrap">
+            <!-- Replace the src ID with any YouTube video you prefer -->
+            <iframe src="https://www.youtube.com/embed/3dHNOWTI7H4" title="Prediction Markets Explained" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="note">Embedded to show external integration and to help users learn quickly.</div>
+        </div>
+
+        <div class="card widget">
+          <h3>Glossary (short)</h3>
+          <div class="small">
+            <strong>Share:</strong> unit representing claim on event outcome.<br>
+            <strong>Price:</strong> cost per share (0–1); approximates probability.<br>
+            <strong>Resolution:</strong> final verification step determining payout.<br>
+            <strong>Liquidity:</strong> ease of buying/selling without big price moves.
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      Built for academic / demo submission • Use responsibly • Contact: <span style="color:var(--accent)">team@predictionmart.example</span>
+    </footer>
+  </div>
+
+  <script>
+    // MARKET SIMULATOR using Chart.js
+    (function(){
+      // helper: format as percentage and price
+      function formatPrice(v){ return '$' + (v).toFixed(2) }
+      function toPct(v){ return (v*100).toFixed(0) + '%' }
+
+      // initial dataset
+      const initialLabels = [];
+      const initialData = [];
+      // Seed with 8 points across "time"
+      for(let i=8;i>=1;i--){
+        const t = new Date(Date.now() - i*60000);
+        initialLabels.push(t.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
+        // random walk seed value ~0.45
+        initialData.push( Math.min(1, Math.max(0, 0.45 + (Math.random()-0.5)*0.14)) );
+      }
+
+      const ctx = document.getElementById('marketChart').getContext('2d');
+      const marketChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: initialLabels,
+          datasets: [{
+            label: 'Market price (probability)',
+            data: initialData,
+            fill: true,
+            tension: 0.3,
+            pointRadius:4,
+            borderWidth:2,
+            borderColor: 'rgba(110,231,183,0.95)',
+            backgroundColor: 'linear-gradient(180deg, rgba(110,231,183,0.06), transparent)'
+          }]
+        },
+        options: {
+          maintainAspectRatio:false,
+          scales: {
+            y: {
+              min:0, max:1,
+              ticks: {
+                callback: function(v){ return Math.round(v*100) + '%' }
+              }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context){
+                  const v = context.parsed.y;
+                  return 'Price: ' + formatPrice(v) + '  (' + toPct(v) + ')';
+                }
+              }
+            },
+            legend:{display:false}
+          }
+        }
+      });
+
+      const lastPriceEl = document.getElementById('lastPrice');
+      function updateLastPrice(){
+        const arr = marketChart.data.datasets[0].data;
+        const last = arr[arr.length-1];
+        lastPriceEl.textContent = formatPrice(last) + ' • ' + (Math.round(last*100)) + '%';
+      }
+      updateLastPrice();
+
+      // Add a new random datapoint (random walk from last point)
+      document.getElementById('addPointBtn').addEventListener('click', function(){
+        const dataset = marketChart.data.datasets[0].data;
+        const labels = marketChart.data.labels;
+        const last = dataset[dataset.length-1];
+        // small random drift
+        let next = last + (Math.random()-0.48)*0.12;
+        next = Math.min(1, Math.max(0, next));
+        const t = new Date();
+        labels.push(t.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
+        dataset.push(+next.toFixed(3));
+        // keep last 30 points
+        if(labels.length>30){ labels.shift(); dataset.shift(); }
+        marketChart.update();
+        updateLastPrice();
+      });
+
+      // Reset chart
+      document.getElementById('resetBtn').addEventListener('click', function(){
+        marketChart.data.labels = initialLabels.slice();
+        marketChart.data.datasets[0].data = initialData.slice();
+        marketChart.update();
+        updateLastPrice();
+      });
+
+    })();
+  </script>
+</body>
+</html>
