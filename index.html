@@ -117,8 +117,35 @@
     footer{margin-top:26px;color:var(--muted);font-size:13px;text-align:center}
     a.cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,#60a5fa,#6ee7b7);color:#042028;text-decoration:none;font-weight:600}
 
-    .youtube-wrap iframe{width:100%;height:220px;border-radius:10px;border:0}
     .note{font-size:13px;color:var(--muted);margin-top:10px}
+
+    /* YouTube thumbnail fallback styling */
+    .youtube-wrap {
+      position: relative;
+      display: block;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .youtube-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
+    }
+    .youtube-wrap .yt-play {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.6);
+      border-radius: 50%;
+      padding: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+    }
+    .youtube-wrap .yt-play svg { display:block; width:28px; height:28px; }
   </style>
 </head>
 <body>
@@ -180,7 +207,7 @@
           <h3 style="margin-top:0">Quick primer — what is a prediction market?</h3>
           <p class="muted-block">
             A prediction market is a marketplace where participants buy and sell shares tied to the outcome of a specific, verifiable event.
-            Each share’s **price** can be read as the market’s probability that the event happens. For example, a share priced at <strong>$0.42</strong> implies a 42% market probability.
+            Each share’s <strong>price</strong> can be read as the market’s probability that the event happens. For example, a share priced at <strong>$0.42</strong> implies a 42% market probability.
           </p>
 
           <div style="margin-top:10px">
@@ -255,20 +282,17 @@
           <div class="note">Tip: this demonstrates how new trades/news can move market probability in real time.</div>
         </div>
 
-        <!-- Prebuilt widget: YouTube -->
-        <div class="youtube-wrap">
-  <a href="https://www.youtube.com/watch?v=xA27x7GRMZQ" target="_blank" rel="noopener" style="text-decoration:none;">
-    <img 
-      src="https://img.youtube.com/vi/xA27x7GRMZQ/hqdefault.jpg" 
-      alt="Prediction Markets | Explainer" 
-      style="width:100%;border-radius:10px;">
-    <div style="
-      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-      background:rgba(0,0,0,0.6);border-radius:50%;padding:15px;">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"></path></svg>
-    </div>
-  </a>
-</div>
+        <!-- Prebuilt widget: YouTube fallback -->
+        <div class="youtube-wrap card widget" style="padding:0;">
+          <a href="https://www.youtube.com/watch?v=xA27x7GRMZQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;">
+            <img src="https://img.youtube.com/vi/xA27x7GRMZQ/hqdefault.jpg" alt="Prediction Markets | Explainer thumbnail">
+            <div class="yt-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </a>
+        </div>
 
         <div class="card widget">
           <h3>Glossary (short)</h3>
@@ -290,18 +314,14 @@
   <script>
     // MARKET SIMULATOR using Chart.js
     (function(){
-      // helper: format as percentage and price
       function formatPrice(v){ return '$' + (v).toFixed(2) }
       function toPct(v){ return (v*100).toFixed(0) + '%' }
 
-      // initial dataset
       const initialLabels = [];
       const initialData = [];
-      // Seed with 8 points across "time"
       for(let i=8;i>=1;i--){
         const t = new Date(Date.now() - i*60000);
         initialLabels.push(t.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
-        // random walk seed value ~0.45
         initialData.push( Math.min(1, Math.max(0, 0.45 + (Math.random()-0.5)*0.14)) );
       }
 
@@ -314,71 +334,3 @@
             label: 'Market price (probability)',
             data: initialData,
             fill: true,
-            tension: 0.3,
-            pointRadius:4,
-            borderWidth:2,
-            borderColor: 'rgba(110,231,183,0.95)',
-            backgroundColor: 'linear-gradient(180deg, rgba(110,231,183,0.06), transparent)'
-          }]
-        },
-        options: {
-          maintainAspectRatio:false,
-          scales: {
-            y: {
-              min:0, max:1,
-              ticks: {
-                callback: function(v){ return Math.round(v*100) + '%' }
-              }
-            }
-          },
-          plugins: {
-            tooltip: {
-              callbacks: {
-                label: function(context){
-                  const v = context.parsed.y;
-                  return 'Price: ' + formatPrice(v) + '  (' + toPct(v) + ')';
-                }
-              }
-            },
-            legend:{display:false}
-          }
-        }
-      });
-
-      const lastPriceEl = document.getElementById('lastPrice');
-      function updateLastPrice(){
-        const arr = marketChart.data.datasets[0].data;
-        const last = arr[arr.length-1];
-        lastPriceEl.textContent = formatPrice(last) + ' • ' + (Math.round(last*100)) + '%';
-      }
-      updateLastPrice();
-
-      // Add a new random datapoint (random walk from last point)
-      document.getElementById('addPointBtn').addEventListener('click', function(){
-        const dataset = marketChart.data.datasets[0].data;
-        const labels = marketChart.data.labels;
-        const last = dataset[dataset.length-1];
-        // small random drift
-        let next = last + (Math.random()-0.48)*0.12;
-        next = Math.min(1, Math.max(0, next));
-        const t = new Date();
-        labels.push(t.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
-        dataset.push(+next.toFixed(3));
-        // keep last 30 points
-        if(labels.length>30){ labels.shift(); dataset.shift(); }
-        marketChart.update();
-        updateLastPrice();
-      });
-
-      // Reset chart
-      document.getElementById('resetBtn').addEventListener('click', function(){
-        marketChart.data.labels = initialLabels.slice();
-        marketChart.data.datasets[0].data = initialData.slice();
-        marketChart.update();
-        updateLastPrice();
-      });
-
-    })();
-  </script>
-</body>
-</html>
